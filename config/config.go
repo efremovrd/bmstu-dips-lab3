@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// App config struct
 type Config struct {
 	Server         ServerConfig
 	Postgres       PostgresConfig
