@@ -6,4 +6,5 @@ type Handlers interface {
 	Create() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	GetByPaymentUid() gin.HandlerFunc
+	Delete() gin.HandlerFunc
 }

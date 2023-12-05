@@ -109,6 +109,27 @@ func (p *PaymentRepo) GetByPaymentUid(ctx context.Context, payment_uid string) (
 	return PaymentDBToBL(&modelDB)
 }
 
+func (p *PaymentRepo) Delete(ctx context.Context, payment_uid string) error {
+	sql, args, err := p.Builder.
+		Delete("payment").
+		Where(squirrel.Eq{"payment_uid": payment_uid}).
+		ToSql()
+	if err != nil {
+		return err
+	}
+
+	res, err := p.Pool.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	if res.RowsAffected() == 0 {
+		return errs.ErrNoContent
+	}
+
+	return nil
+}
+
 func PaymentDBToBL(modelDB *PaymentDB) (*models.Payment, error) {
 	return &models.Payment{
 		Id:          modelDB.id,

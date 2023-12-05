@@ -374,7 +374,26 @@ func (g *GatewayHandlers) CreateReservation() gin.HandlerFunc {
 
 		incrementcounterres, err := http.DefaultClient.Do(incrementcounterreq)
 		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+			// rollback
+			deletepaymenturl := paymentService + "/api/v1/payments/" + payment_uid
+			deletepaymentreq, err := http.NewRequest(http.MethodDelete, deletepaymenturl, nil)
+			if err != nil {
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+
+			deletepaymentres, err := http.DefaultClient.Do(deletepaymentreq)
+			if err != nil {
+				c.JSON(http.StatusServiceUnavailable, ErrorResponse{Message: "Payment Service unavailable"})
+				return
+			}
+
+			if deletepaymentres.StatusCode != http.StatusNoContent {
+				c.AbortWithStatus(createpaymentres.StatusCode)
+				return
+			}
+
+			c.JSON(http.StatusServiceUnavailable, ErrorResponse{Message: "Loyalty Service unavailable"})
 			return
 		}
 

@@ -120,6 +120,24 @@ func (p *PaymentHandlers) GetByPaymentUid() gin.HandlerFunc {
 	}
 }
 
+func (p *PaymentHandlers) Delete() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		payment_uid := c.Param("paymentUid")
+		if payment_uid == "" {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		err := p.paymentUC.Delete(c, payment_uid)
+		if err != nil {
+			c.AbortWithStatus(errs.MatchHttpErr(err))
+			return
+		}
+
+		c.Status(http.StatusNoContent)
+	}
+}
+
 func PaymentCreatRequestToBL(dto *PaymentCreatRequest) *models.Payment {
 	return &models.Payment{
 		Status: dto.Status,

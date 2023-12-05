@@ -37,3 +37,7 @@ func (p *PaymentUseCase) Update(ctx context.Context, payment *models.Payment, to
 func (p *PaymentUseCase) GetByPaymentUid(ctx context.Context, payment_uid string) (*models.Payment, error) {
 	return p.paymentRepo.GetByPaymentUid(ctx, payment_uid)
 }
+
+func (p *PaymentUseCase) Delete(ctx context.Context, payment_uid string) error {
+	return p.paymentRepo.Delete(ctx, payment_uid)
+}
